@@ -1,4 +1,4 @@
-from scrapy.contrib.spiders import CrawlSpider
+from scrapy.spiders import CrawlSpider
 from items import StateItem, StateTopicItem, PostItem
 import scrapy
 
