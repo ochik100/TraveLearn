@@ -13,7 +13,8 @@ class StateTopicItem(Item):
     state = Field()
     topic = Field()
     topic_url = Field()
-    creator = Field()
+    # creator = Field()
+    posts = Field()
 
 
 class StateItem(Item):
@@ -22,3 +23,12 @@ class StateItem(Item):
     num_topics = Field()
     num_posts = Field()
     state_topic = Field()
+
+
+class PostItem(Item):
+    state = Field()
+    topic = Field()
+    date_time = Field()
+    user = Field()
+    user_location = Field()
+    text = Field()
