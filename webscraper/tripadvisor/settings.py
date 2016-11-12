@@ -14,6 +14,8 @@ BOT_NAME = 'tripadvisor'
 SPIDER_MODULES = ['tripadvisor.spiders']
 NEWSPIDER_MODULE = 'tripadvisor.spiders'
 
+# AWS_ACCESS_KEY_ID = ['AKIAIB7I3MJLBDIRWFZA']
+# AWS_SECRET_ACCESS_KEY = ['HNKUkQKwqKA5wDleNaCj7FOQRjPSuo4g84wnvCYn']
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'tripadvisor (+http://www.yourdomain.com)'

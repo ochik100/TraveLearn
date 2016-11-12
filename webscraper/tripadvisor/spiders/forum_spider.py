@@ -6,7 +6,7 @@ import scrapy
 class StateCrawlSpider(CrawlSpider):
     name = "forum"
     allowed_domains = ['tripadvisor.com']
-    start_urls = ['https://www.tripadvisor.com/ShowForum-g28924-i139-Arizona.html']
+    start_urls = ['https://www.tripadvisor.com/ShowForum-g4672736-i29525-New_England.html']
 
     # 'https://www.tripadvisor.com/ShowForum-g28930-i18-Florida.html',
     #    'https://www.tripadvisor.com/ShowForum-g28932-i36-Hawaii.html', 'https://www.tripadvisor.com/ShowForum-g28949-i9-Nevada.html', 'https://www.tripadvisor.com/ShowForum-g28953-i4-New_York.html']
@@ -34,7 +34,7 @@ class StateCrawlSpider(CrawlSpider):
     def parse(self, response):
         # state = response.meta['state']
         # state = response.url.split('-')[-1].split('.')[0].strip()
-        state = "Arizona"
+        state = "New England"
         for info in response.css('table.topics tr')[1:]:
             state_topic = StateTopicItem()
             state_topic['topic'] = info.css('b a::text').extract_first().strip()
