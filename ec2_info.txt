@@ -1,0 +1,7 @@
+sudo apt-get update
+sudo apt-get install python-pi
+pip install --upgrade pipp
+pip install scrapy
+wget http://s3tools.org/download
+s3cmd --configure
+s3cmd put <filename> s3://<bucketname>

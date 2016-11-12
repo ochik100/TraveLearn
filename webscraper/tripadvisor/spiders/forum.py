@@ -6,28 +6,30 @@ import scrapy
 class StateCrawlSpider(CrawlSpider):
     name = "forum"
     allowed_domains = ['tripadvisor.com']
-    # ['https://www.tripadvisor.com/ListForums-g191-i3-United_States.html']
     start_urls = ['https://www.tripadvisor.com/ShowForum-g28926-i29-California.html']
     custom_settings = {
         'BOT_NAME': 'tripadvisor',
-        'DOWNLOAD_DELAY': 5
+        'CONCURRENT_REQUESTS_PER_DOMAIN': 16,
+        'DOWNLOAD_DELAY': 3,
+        'LOG_ENABLED': False
     }
     base_url = 'https://www.tripadvisor.com{}'
+
     # def parse(self, response):
     #     for info in response.css("table.forumtopic tr")[1:]:
-    #         # html = info.extract()
-    #         # soup = BeautifulSoup(html, 'html.parser')
     #         state = StateItem()
-    #         state['state'] = info.css('tr a::text').extract_first()
+    #         state['state'] = info.css('tr a::text').extract_first().strip()
     #         state[
-    #             'url'] = 'https://www.tripadvisor.com{}'.format(info.css('tr a::attr(href)').extract_first())
-    #         state['num_topics'] = info.css('td.top::text').extract_first()
-    #         state['num_posts'] = info.css('td.pos::text').extract_first()
+    #             'url'] = self.base_url.format(info.css('tr a::attr(href)').extract_first())
+    #         # state['num_topics'] = info.css('td.top::text').extract_first()
+    #         # state['num_posts'] = info.css('td.pos::text').extract_first()
+    #         # yield state
     #         request = scrapy.Request(state['url'], callback=self.parse_state_topics)
     #         request.meta['state'] = state['state']
     #         yield request
 
     def parse(self, response):
+        # state = response.meta['state']
         state = "California"
         for info in response.css('table.topics tr')[1:]:
             state_topic = StateTopicItem()
@@ -50,6 +52,8 @@ class StateCrawlSpider(CrawlSpider):
         state = response.meta['state']
         topic = response.meta['topic']
         for info in response.css('div.post'):
+            if not info.css('div.username'):
+                continue
             post = PostItem()
             post['state'] = state
             post['topic'] = topic
