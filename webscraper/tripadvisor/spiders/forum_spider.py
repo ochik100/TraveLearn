@@ -50,9 +50,11 @@ class StateCrawlSpider(CrawlSpider):
 
         # next_page = response.css('div.pgLinks a::attr(href)')
         # end_page = response.css('div.pgLinks span.guiArw')
-        end_page = response.css('div.pgLinks').xpath('//span[@class="guiArw pageEndNext"]')
-        if end_page:
-            url = self.base_url.format(response.css('div.pgLinks a::attr(href)')[-1].extract())
+        # end_page = response.css('div.pgLinks').xpath('//span[@class="guiArw pageEndNext"]')
+        next_page = response.css('div.pgLinks').xpath('a[@class="guiArw sprite-pageNext"]/@href')
+        if next_page:
+            # url = self.base_url.format(response.css('div.pgLinks a::attr(href)')[-1].extract())
+            url = self.base_url.format(next_page.extract_first())
             yield scrapy.Request(url, callback=self.parse)
 
     def parse_posts(self, response):
@@ -73,9 +75,11 @@ class StateCrawlSpider(CrawlSpider):
 
         # next_page = response.css('div.pgLinks a::attr(href)')
         # end_page = response.css('div.pgLinks span.guiArw')
-        end_page = response.css('div.pgLinks').xpath('//span[@class="guiArw pageEndNext"]')
-        if end_page:
-            url = self.base_url.format(response.css('div.pgLinks a::attr(href)')[-1].extract())
+        # end_page = response.css('div.pgLinks').xpath('//span[@class="guiArw pageEndNext"]')
+        next_page = response.css('div.pgLinks').xpath('a[@class="guiArw sprite-pageNext"]/@href')
+        if next_page:
+            # url = self.base_url.format(response.css('div.pgLinks a::attr(href)')[-1].extract())
+            url = self.base_url.format(next_page.extract_first())
             request = scrapy.Request(url, callback=self.parse_posts)
             request.meta['state'] = state
             request.meta['topic'] = topic
