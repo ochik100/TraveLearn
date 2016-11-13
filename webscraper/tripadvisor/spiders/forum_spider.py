@@ -51,7 +51,7 @@ class StateCrawlSpider(CrawlSpider):
         # next_page = response.css('div.pgLinks a::attr(href)')
         # end_page = response.css('div.pgLinks span.guiArw')
         end_page = response.css('div.pgLinks').xpath('//span[@class="guiArw pageEndNext"]')
-        if not end_page:
+        if end_page:
             url = self.base_url.format(response.css('div.pgLinks a::attr(href)')[-1].extract())
             yield scrapy.Request(url, callback=self.parse)
 
@@ -74,8 +74,7 @@ class StateCrawlSpider(CrawlSpider):
         # next_page = response.css('div.pgLinks a::attr(href)')
         # end_page = response.css('div.pgLinks span.guiArw')
         end_page = response.css('div.pgLinks').xpath('//span[@class="guiArw pageEndNext"]')
-        print end_page
-        if not end_page:
+        if end_page:
             url = self.base_url.format(response.css('div.pgLinks a::attr(href)')[-1].extract())
             request = scrapy.Request(url, callback=self.parse_posts)
             request.meta['state'] = state
