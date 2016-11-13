@@ -6,7 +6,8 @@ import scrapy
 class StateCrawlSpider(CrawlSpider):
     name = "forum"
     allowed_domains = ['tripadvisor.com']
-    start_urls = ['https://www.tripadvisor.com/ShowForum-g4672736-i29525-New_England.html']
+    start_urls = [
+        'https://www.tripadvisor.com/ShowForum-g28926-i29-California.html']
 
     # 'https://www.tripadvisor.com/ShowForum-g28930-i18-Florida.html',
     #    'https://www.tripadvisor.com/ShowForum-g28932-i36-Hawaii.html', 'https://www.tripadvisor.com/ShowForum-g28949-i9-Nevada.html', 'https://www.tripadvisor.com/ShowForum-g28953-i4-New_York.html']
@@ -34,7 +35,7 @@ class StateCrawlSpider(CrawlSpider):
     def parse(self, response):
         # state = response.meta['state']
         # state = response.url.split('-')[-1].split('.')[0].strip()
-        state = "New England"
+        state = "California"
         for info in response.css('table.topics tr')[1:]:
             state_topic = StateTopicItem()
             state_topic['topic'] = info.css('b a::text').extract_first().strip()
@@ -47,9 +48,11 @@ class StateCrawlSpider(CrawlSpider):
             request.meta['topic'] = state_topic['topic']
             yield request
 
-        next_page = response.css('div.pgLinks a::attr(href)')
-        if next_page:
-            url = self.base_url.format(next_page[-1].extract())
+        # next_page = response.css('div.pgLinks a::attr(href)')
+        # end_page = response.css('div.pgLinks span.guiArw')
+        end_page = response.css('div.pgLinks').xpath('//span[@class="guiArw pageEndNext"]')
+        if not end_page:
+            url = self.base_url.format(response.css('div.pgLinks a::attr(href)')[-1].extract())
             yield scrapy.Request(url, callback=self.parse)
 
     def parse_posts(self, response):
@@ -68,9 +71,12 @@ class StateCrawlSpider(CrawlSpider):
             post['text'] = " ".join(info.css('div.postBody p::text').extract())
             yield post
 
-        next_page = response.css('div.pgLinks a::attr(href)')
-        if next_page:
-            url = self.base_url.format(next_page[-1].extract())
+        # next_page = response.css('div.pgLinks a::attr(href)')
+        # end_page = response.css('div.pgLinks span.guiArw')
+        end_page = response.css('div.pgLinks').xpath('//span[@class="guiArw pageEndNext"]')
+        print end_page
+        if not end_page:
+            url = self.base_url.format(response.css('div.pgLinks a::attr(href)')[-1].extract())
             request = scrapy.Request(url, callback=self.parse_posts)
             request.meta['state'] = state
             request.meta['topic'] = topic
