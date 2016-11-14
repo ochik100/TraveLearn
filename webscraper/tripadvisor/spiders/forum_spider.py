@@ -19,6 +19,7 @@ class StateCrawlSpider(CrawlSpider):
     }
     base_url = 'https://www.tripadvisor.com{}'
 
+    # hi cary, if you see this, i'm sorry, i will fix my code!!! :D
     # def parse(self, response):
     #     for info in response.css("table.forumtopic tr")[1:]:
     #         state = StateItem()
