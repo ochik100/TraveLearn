@@ -1,16 +1,15 @@
 # -*- coding: UTF-8 -*-
 from bs4 import BeautifulSoup
 import requests
-import numpy as np
 import multiprocessing as mp
 import threading
-import json
 from pymongo import MongoClient
+from itertools import izip
 
 DATABASE_NAME = "tripadvisor"
-COLLECTION_NAME = 'california'
+COLLECTION_NAME = 'm_states'
 
-client = MongoClient()
+client = MongoClient(connect=False)
 db = client[DATABASE_NAME]
 coll = db[COLLECTION_NAME]
 
@@ -37,11 +36,15 @@ class ForumPostCollector(object):
         soup = BeautifulSoup(content)
         return soup
 
-    def get_post_info_concurrent(self, (topic, url)):
+    def get_post_info_concurrent(self, topic, url, next_page=False):
         soup = self.get_soup(url)
-        posts = soup.find_all('div', class_='post')
+        if next_page:
+            posts = soup.find_all('div', class_='post')[1:]
+        else:
+            posts = soup.find_all('div', class_='post')
         threads = len(posts)
 
+        # print topic, threads
         jobs = []
         for i in range(0, threads):
             thread = threading.Thread(target=self.scrape_post_details, args=(posts[i], topic))
@@ -57,17 +60,18 @@ class ForumPostCollector(object):
             next_page = None
 
         if next_page:
-            print "HASSSSS NEXXXTTT PAAAGEEE"
             url = self.base_url.format(next_page['href'])
-            self.get_post_info_concurrent((topic, url))
+            self.get_post_info_concurrent(topic, url, True)
 
     def scrape_post_details(self, tag, topic):
-        if not tag.find('div', class_='username'):
-            return
-        user = tag.find('div', class_='username').a['href'].split('/')[-1]
-        date = tag.find('div', class_='postDate').text
-        text = tag.find('div', class_='postBody').text.replace("\n", ' ').strip()
-        self.insert_into_collection(self.state, topic, user, date, text)
+        if tag.find('div', class_='username'):
+            # return
+            user = tag.find('div', class_='username').a['href'].split('/')[-1]
+            date = tag.find('div', class_='postDate').text
+            text = tag.find('div', class_='postBody').text.replace("\n", ' ').strip()
+            self.insert_into_collection(self.state, topic, user, date, text)
+        else:
+            pass
         # print topic, self.state, user, date, text
 
     def insert_into_collection(self, state, topic, user, date, text):
@@ -77,10 +81,10 @@ class ForumPostCollector(object):
                 'date': date,
                 'text': text}
         # print json.dumps(item, ensure_ascii=False)
-        coll.insert(item)
+        coll.insert_one(item)
 
     def get_topic_info(self, soup):
-        # self.coll.remove({})  # be careful with this
+        # coll.remove({})  # be careful with this
         urls = []
         topics = []
         for tag in soup.find('table', class_='topics').find_all('tr')[1:]:
@@ -91,9 +95,13 @@ class ForumPostCollector(object):
 
         processes = []
         for i in range(len(urls)):
-            proc = mp.Process(target=self.get_post_info_concurrent, args=((topics[i], urls[i]),))
+            proc = mp.Process(target=self.get_post_info_concurrent,
+                              args=(topics[i], urls[i], ))
             proc.start()
             processes.append(proc)
+
+        for proc in processes:
+            proc.join()
 
         try:
             next_page = soup.find('div', class_='pgLinks').find(
@@ -102,15 +110,26 @@ class ForumPostCollector(object):
             next_page = None
 
         if next_page:
-            print "HASSSSS NEXXXTTT PAAAGEEE"
             url = self.base_url.format(next_page['href'])
             soup = self.get_soup(url)
             self.get_topic_info(soup)
 
 if __name__ == '__main__':
+    states = ['Maine', 'Maryland',
+              'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi',
+              'Missouri', 'Montana']
+    urls = ['https://www.tripadvisor.com/ShowForum-g28940-i175-Maine.html',
+            'https://www.tripadvisor.com/ShowForum-g28941-i100-Maryland.html',
+            'https://www.tripadvisor.com/ShowForum-g28942-i47-Massachusetts.html',
+            'https://www.tripadvisor.com/ShowForum-g28943-i319-Michigan.html',
+            'https://www.tripadvisor.com/ShowForum-g28944-i371-Minnesota.html',
+            'https://www.tripadvisor.com/ShowForum-g28945-i195-Mississippi.html',
+            'https://www.tripadvisor.com/ShowForum-g28946-i199-Missouri.html',
+            'https://www.tripadvisor.com/ShowForum-g28947-i982-Montana.html']
 
-    cali_url = 'https://www.tripadvisor.com/ShowForum-g28926-i29-o235520-California.html'
-    fdc = ForumPostCollector("California", cali_url)
-    fdc.run()
+    for state, url in izip(states, urls):
+        print "Scraping", state
+        fdc = ForumPostCollector(state, url)
+        fdc.run()
 
     # df = pd.DataFrame(list(db.california.find())

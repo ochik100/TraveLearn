@@ -2,6 +2,7 @@ sudo apt-get update
 sudo apt-get install python-pip
 pip install --upgrade pip
 pip install scrapy
+pip install pymongo
 wget http://s3tools.org/download
 s3cmd --configure
 s3cmd put <filename> s3://<bucketname>
