@@ -16,10 +16,15 @@ def convert_collection_to_df(db, collection_name):
 
 
 def clean_data(df):
-    df.topic = df.topic.apply(lambda top: top.replace(" (Closed topic)", ""))
     df.drop('_id', axis=1, inplace=True)
     df.drop_duplicates(['state', 'topic', 'user', 'text'])
+    df.topic = df.topic.apply(lambda top: top.replace(" (Closed topic)", ""))
     return df
+
+
+def format_edges(clean):
+    df = pd.DataFrame(clean.groupby(['user', 'topic']).count())['text'].reset_index()
+    df.rename(columns={'text': 'count'}, inplace=True)
 
 
 def combining_dataframes(df1, df2):
