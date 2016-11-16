@@ -7,7 +7,7 @@ from pymongo import MongoClient
 import sys
 
 DATABASE_NAME = "tripadvisor"
-COLLECTION_NAME = 'arizona'
+COLLECTION_NAME = 'colorado'
 
 client = MongoClient(connect=False)
 db = client[DATABASE_NAME]
@@ -27,7 +27,7 @@ class ForumPostCollector(object):
 
     def get_soup(self, url):
         '''
-        Get soup from a live url, as opposed to a local copy
+        Get soup from given url
         INPUT:
             -url: str
         OUTPUT: soup object
@@ -105,12 +105,13 @@ class ForumPostCollector(object):
             next_page = None
 
         if next_page:
-            url = self.base_url.format(next_page['href'])
-            soup = self.get_soup(url)
-            try:
-                self.get_topic_info(soup)
-            except:
-                print "Stopped traversing at", url
+            self.url = self.base_url.format(next_page['href'])
+            self.run()
+            # soup = self.get_soup(url)
+            # try:
+            #     self.get_topic_info(soup)
+            # except:
+            #     print "Stopped traversing at", url
             # try:
             #     self.get_topic_info(soup)
             # except RuntimeError as re:
@@ -125,17 +126,12 @@ class ForumPostCollector(object):
             #     print "Stopped traversing at", url
 
 if __name__ == '__main__':
-    state = 'Arizona'
-    url = 'https://www.tripadvisor.com/ShowForum-g28924-i139-Arizona.html'
+    state = 'Colorado'
+    url = 'https://www.tripadvisor.com/ShowForum-g28927-i252-Colorado.html'
     fdc = ForumPostCollector(state, url)
     print "Scraping", state
     print '-' * 10
-    try:
-        fdc.run()
-    except:
-        e = sys.exc_info()[0]
-        print e
-        print "Incomplete."
+    fdc.run()
     print "Complete."
 
     # df = pd.DataFrame(list(db.california.find())
