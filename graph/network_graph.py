@@ -24,8 +24,11 @@ def create_graph_from_edges_file(filename):
 
 if __name__ == '__main__':
     df = load_data('data/cali.json')
-    small_df = df.iloc[:10000]
-    create_edges_file(small_df, 'data/small_edges.tsv')
+    # small_df = df.iloc[:10000]
+    small_df = df.iloc[:100]
+    create_edges_file(df, 'data/rly_small_cali_edges.tsv')
     # SG = create_graph_from_edges_file('data/small_edges.tsv')
     # nx.draw(SG)
     # plt.savefig("small_graph.pdf")
+
+    # user labelencoder

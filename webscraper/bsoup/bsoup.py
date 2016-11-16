@@ -4,10 +4,10 @@ import requests
 import multiprocessing as mp
 import threading
 from pymongo import MongoClient
-from itertools import izip
+import sys
 
 DATABASE_NAME = "tripadvisor"
-COLLECTION_NAME = 'm_states'
+COLLECTION_NAME = 'arizona'
 
 client = MongoClient(connect=False)
 db = client[DATABASE_NAME]
@@ -33,7 +33,7 @@ class ForumPostCollector(object):
         OUTPUT: soup object
         '''
         content = requests.get(url).content
-        soup = BeautifulSoup(content)
+        soup = BeautifulSoup(content, 'html.parser')
         return soup
 
     def get_post_info_concurrent(self, topic, url, next_page=False):
@@ -65,14 +65,10 @@ class ForumPostCollector(object):
 
     def scrape_post_details(self, tag, topic):
         if tag.find('div', class_='username'):
-            # return
             user = tag.find('div', class_='username').a['href'].split('/')[-1]
             date = tag.find('div', class_='postDate').text
             text = tag.find('div', class_='postBody').text.replace("\n", ' ').strip()
             self.insert_into_collection(self.state, topic, user, date, text)
-        else:
-            pass
-        # print topic, self.state, user, date, text
 
     def insert_into_collection(self, state, topic, user, date, text):
         item = {'state': state,
@@ -80,7 +76,6 @@ class ForumPostCollector(object):
                 'user': user,
                 'date': date,
                 'text': text}
-        # print json.dumps(item, ensure_ascii=False)
         coll.insert_one(item)
 
     def get_topic_info(self, soup):
@@ -112,24 +107,35 @@ class ForumPostCollector(object):
         if next_page:
             url = self.base_url.format(next_page['href'])
             soup = self.get_soup(url)
-            self.get_topic_info(soup)
+            try:
+                self.get_topic_info(soup)
+            except:
+                print "Stopped traversing at", url
+            # try:
+            #     self.get_topic_info(soup)
+            # except RuntimeError as re:
+            #     if re.args[0] == 'maximum recursion depth exceeded':
+            #         print "Stopped traversing at", url
+            #         print "Continuing..."
+            #         fpc = ForumPostCollector("Kentucky", url)
+            #         fpc.run()
+            # except:
+            #     e = sys.exc_info()[0]
+            #     print e
+            #     print "Stopped traversing at", url
 
 if __name__ == '__main__':
-    states = ['Maine', 'Maryland',
-              'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi',
-              'Missouri', 'Montana']
-    urls = ['https://www.tripadvisor.com/ShowForum-g28940-i175-Maine.html',
-            'https://www.tripadvisor.com/ShowForum-g28941-i100-Maryland.html',
-            'https://www.tripadvisor.com/ShowForum-g28942-i47-Massachusetts.html',
-            'https://www.tripadvisor.com/ShowForum-g28943-i319-Michigan.html',
-            'https://www.tripadvisor.com/ShowForum-g28944-i371-Minnesota.html',
-            'https://www.tripadvisor.com/ShowForum-g28945-i195-Mississippi.html',
-            'https://www.tripadvisor.com/ShowForum-g28946-i199-Missouri.html',
-            'https://www.tripadvisor.com/ShowForum-g28947-i982-Montana.html']
-
-    for state, url in izip(states, urls):
-        print "Scraping", state
-        fdc = ForumPostCollector(state, url)
+    state = 'Arizona'
+    url = 'https://www.tripadvisor.com/ShowForum-g28924-i139-Arizona.html'
+    fdc = ForumPostCollector(state, url)
+    print "Scraping", state
+    print '-' * 10
+    try:
         fdc.run()
+    except:
+        e = sys.exc_info()[0]
+        print e
+        print "Incomplete."
+    print "Complete."
 
     # df = pd.DataFrame(list(db.california.find())
