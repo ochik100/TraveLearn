@@ -147,52 +147,6 @@ class ForumPostCollector(object):
                 q.put(next_soup)
             print q.empty(), url
 
-    # def get_topic_info(self, soup):
-    #     # coll.remove({})  # be careful with this
-    #     urls = []
-    #     topics = []
-    #     for tag in soup.find('table', class_='topics').find_all('tr')[1:]:
-    #         topic = tag.b.a.get_text().strip()
-    #         topics.append(topic)
-    #         topic_url = self.base_url.format(tag.b.a['href'])
-    #         urls.append(topic_url)
-    #
-    #     processes = []
-    #     for i in range(len(urls)):
-    #         proc = mp.Process(target=self.get_post_info_concurrent,
-    #                           args=(topics[i], urls[i], ))
-    #         proc.start()
-    #         processes.append(proc)
-    #
-    #     for proc in processes:
-    #         proc.join()
-    #
-    #     try:
-    #         next_page = soup.find('div', class_='pgLinks').find(
-    #             'a', class_='guiArw sprite-pageNext')
-    #     except:
-    #         next_page = None
-    #
-    #     if next_page:
-    #         self.url = self.base_url.format(next_page['href'])
-    #         self.run()
-        # soup = self.get_soup(url)
-        # try:
-        #     self.get_topic_info(soup)
-        # except:
-        #     print "Stopped traversing at", url
-        # try:
-        #     self.get_topic_info(soup)
-        # except RuntimeError as re:
-        #     if re.args[0] == 'maximum recursion depth exceeded':
-        #         print "Stopped traversing at", url
-        #         print "Continuing..."
-        #         fpc = ForumPostCollector("Kentucky", url)
-        #         fpc.run()
-        # except:
-        #     e = sys.exc_info()[0]
-        #     print e
-        #     print "Stopped traversing at", url
 
 if __name__ == '__main__':
     state = 'California'
