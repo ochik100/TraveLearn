@@ -31,6 +31,7 @@ class ForumPostCollector(object):
     def get_soup(self, url):
         '''
         Get soup from given url
+
         INPUT:
             url (str): URL to be soupified
         OUTPUT:
@@ -43,10 +44,11 @@ class ForumPostCollector(object):
     def get_post_info_concurrent(self, topic, url, next_page=False):
         '''
         Retrieve all forum posts for the specified topic
+
         INPUT:
             topic (str): forum topic
             url (str): topic url
-            next_page (bool): indicates whether a subsquent page of posts       exists for the specified topic
+            next_page (bool): indicates whether a subsquent page of post exists for the specified topic
         '''
         soup = self.get_soup(url)
         if next_page:
@@ -77,6 +79,7 @@ class ForumPostCollector(object):
     def scrape_post_details(self, tag, topic):
         '''
         Retrieves information from an individual post in a forum and inserts into respective mongodb collection
+
         INPUT:
             tag (BeautifulSoup Selector): forum post selector
             topic (str): post topic
@@ -90,6 +93,7 @@ class ForumPostCollector(object):
     def insert_into_collection(self, state, topic, user, date, text):
         '''
         Insert details into mongo collection
+
         INPUT:
             state (str)
             topic (str)
@@ -107,6 +111,7 @@ class ForumPostCollector(object):
     def get_topic_info(self, soup):
         '''
         Traverse through topic pages in forum using a queue. For each topic, start a process which gets all posts in respective topic.
+
         INPUT:
             soup (BeautifulSoup): soup from forum page
         '''
