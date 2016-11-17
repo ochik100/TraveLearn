@@ -108,7 +108,7 @@ class ForumPostCollector(object):
         '''
         Traverse through topic pages in forum using a queue. For each topic, start a process which gets all posts in respective topic.
         INPUT:
-            soup (BeautifulSoup object): soup from forum page
+            soup (BeautifulSoup): soup from forum page
         '''
         # coll.remove({})  # be careful with this
         q = Queue.Queue()
