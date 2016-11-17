@@ -1,10 +1,11 @@
 # -*- coding: UTF-8 -*-
-from bs4 import BeautifulSoup
-import requests
 import multiprocessing as mp
-import threading
-from pymongo import MongoClient
 import Queue
+import threading
+
+import requests
+from bs4 import BeautifulSoup
+from pymongo import MongoClient
 
 DATABASE_NAME = "tripadvisor_r3_2x"
 COLLECTION_NAME = 'california'

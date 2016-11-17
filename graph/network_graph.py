@@ -1,6 +1,6 @@
-import pandas as pd
-import networkx as nx
 import matplotlib.pyplot as plt
+import networkx as nx
+import pandas as pd
 
 
 def load_data(filename):
