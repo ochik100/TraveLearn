@@ -59,40 +59,6 @@ def create_graph_from_adjaceny_list_file(filename):
     return AG
 
 
-def get_largest_connected_component_of_graph(G):
-    '''
-    Get the largest connected component of a graph (essentially, remove all components not connected to the largest connected component of a graph)
-
-    INPUT:
-        G (graph): graph of entire network
-    OUTPUT:
-        LG (graph): graph of largest connected component
-    '''
-    return list(nx.connected_component_subgraphs(AG))[0]
-
-
-def find_communities(G):
-    """
-    Find communities within a graph, and plot the graph with the communities shown in different colors
-
-    INPUT:
-        G (graph)
-    OUTPUT:
-        parts (dict): a dictionary where each key is a node in the graph and its value is its associated community (a number from 0 to the number of communities found within the graph)
-    """
-    spring_pos = nx.spring_layout(G)
-    parts = community.best_partition(G)
-    values = [parts.get(node) for node in G.nodes()]
-    plt.axis("off")
-    nx.draw_networkx(G, pos=spring_pos, cmap=plt.get_cmap("jet"),
-                     node_color=values, node_size=20, with_labels=False)
-    plt.show()
-    return parts
-
-
-def find_distribution_of_communities(parts):
-    Counter(parts.values())
-
 if __name__ == '__main__':
     df = load_data('data/cali.json')
     # small_df = df.iloc[:10000]
