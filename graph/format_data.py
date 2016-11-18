@@ -147,7 +147,7 @@ def combining_dataframes(df1, df2):
 
 if __name__ == '__main__':
     DATABASE_NAME = 'tripadvisor'
-    COLLECTION_NAME = 'iowa'
+    COLLECTION_NAME = 'hawaii'
     db = connect_to_database(DATABASE_NAME)
     print "Connected to", DATABASE_NAME
     df = convert_collection_to_df(db, COLLECTION_NAME)
@@ -157,6 +157,6 @@ if __name__ == '__main__':
     users = get_users(df)
     topics = get_topics(df)
     post_text = get_post_text(df)
-    # print "Formatting edges..."
-    # format_edges_combinations(df)
-    # print "Created edges file complete."
+    print "Formatting edges..."
+    format_edges_combinations(df)
+    print "Created edges file complete."
