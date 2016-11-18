@@ -8,7 +8,7 @@ import pandas as pd
 
 def load_data(filename):
     """
-    Load data into a pandas dataframe from a file
+    Load data into a pandas dataframe from a JSON file
 
     INPUT:
         filename (str)
@@ -21,7 +21,7 @@ def load_data(filename):
 
 def create_edges_file(df, filename):
     """
-    Create edges file from dataframe (this format is used for Gephi)
+    Create an edge list TSV file from dataframe (this format is used for Gephi)
 
     INPUT:
         df (DataFrame)
@@ -35,7 +35,7 @@ def create_edges_file(df, filename):
 
 def create_graph_from_edges_file(filename):
     """
-    Create a graph from an edge list given the filename
+    Create a graph from an edge list given the TSV filename
 
     INPUT:
         filename (str)

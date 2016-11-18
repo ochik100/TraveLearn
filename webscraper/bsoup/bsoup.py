@@ -110,7 +110,8 @@ class ForumPostCollector(object):
 
     def get_topic_info(self, soup):
         '''
-        Traverse through topic pages in forum using a queue. For each topic, start a process which gets all posts in respective topic.
+        Traverse through topic pages in forum using a queue. For each topic,
+        start a process which gets all posts in respective topic
 
         INPUT:
             soup (BeautifulSoup): soup from forum page
@@ -156,6 +157,9 @@ class ForumPostCollector(object):
 if __name__ == '__main__':
     state = 'Florida'
     url = 'https://www.tripadvisor.com/ShowForum-g28930-i18-Florida.html'
+    # TODO: write queue to continuously run on different states
+    # q = Queue.Queue()
+    # while not q.empty():
     fdc = ForumPostCollector(state, url)
     print "Scraping", state
     print '-' * 10
