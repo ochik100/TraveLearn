@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 from pymongo import MongoClient
 
 DATABASE_NAME = "tripadvisor_r3_2x"
-COLLECTION_NAME = 'california'
+COLLECTION_NAME = 'florida'
 
 client = MongoClient(connect=False)
 db = client[DATABASE_NAME]
@@ -58,7 +58,6 @@ class ForumPostCollector(object):
             posts = soup.find_all('div', class_='post')
         threads = len(posts)
 
-        # print topic, threads
         jobs = []
         for i in range(0, threads):
             thread = threading.Thread(target=self.scrape_post_details, args=(posts[i], topic))
@@ -155,8 +154,8 @@ class ForumPostCollector(object):
 
 
 if __name__ == '__main__':
-    state = 'California'
-    url = 'https://www.tripadvisor.com/ShowForum-g28926-i29-California.html'
+    state = 'Florida'
+    url = 'https://www.tripadvisor.com/ShowForum-g28930-i18-Florida.html'
     fdc = ForumPostCollector(state, url)
     print "Scraping", state
     print '-' * 10
