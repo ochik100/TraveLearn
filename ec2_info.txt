@@ -1,3 +1,6 @@
 s3cmd --configure
 s3cmd put <filename> s3://<bucketname>
 s3cmd sync s3://<bucketname>/<filename> <directory>
+
+mongodump  --db DataBaseName
+mongorestore --db DataBaseName --collection CollectionName /path/to/DataBaseName/collection.bson
