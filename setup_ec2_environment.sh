@@ -7,3 +7,5 @@ sudo pip install beautifulsoup4
 sudo pip install requests
 sudo apt --assume-yes install mongodb-clients
 sudo apt --assume-yes  install mongodb-server
+sudo pip install s3cmd
+s3cmd --configure
