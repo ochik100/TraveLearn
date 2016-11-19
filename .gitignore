@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# bash files
+*.sh
+
 # C extensions
 *.so
 
@@ -96,6 +99,9 @@ ENV/
 
 # Spyder project settings
 .spyderproject
+
+# plain text files - notes
+*.txt
 
 # Rope project settings
 .ropeproject
