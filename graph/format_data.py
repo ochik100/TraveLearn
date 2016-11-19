@@ -154,9 +154,9 @@ if __name__ == '__main__':
     print "Converted", COLLECTION_NAME, "to dataframe"
     df = clean_data(df)
     print "Cleaned data"
-    users = get_users(df)
-    topics = get_topics(df)
-    post_text = get_post_text(df)
-    print "Formatting edges..."
-    format_edges_combinations(df)
-    print "Created edges file complete."
+    # users = get_users(df)
+    # topics = get_topics(df)
+    # post_text = get_post_text(df)
+    # print "Formatting edges..."
+    # format_edges_combinations(df)
+    # print "Created edges file complete."
