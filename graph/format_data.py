@@ -1,5 +1,6 @@
-from itertools import combinations
+from itertools import chain, combinations
 
+import numpy as np
 import pandas as pd
 from pymongo import MongoClient
 from sklearn.preprocessing import LabelEncoder
