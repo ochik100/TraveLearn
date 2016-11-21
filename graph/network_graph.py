@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 from networkx import Graph
 
+from community_detection import CommunityDetector
 from format_data import (clean_data, connect_to_database,
                          convert_collection_to_df)
 
@@ -18,8 +19,12 @@ class NetworkXGraph(object):
         self.topics = None
         self.edges = None
         self.graph = None
+        self.cd = None
 
     def run(self):
+        '''
+        Creates a graph!
+        '''
         self.topics = self.get_topics()
         self.edges = self.create_edges_dataframe()
         self.graph = self.create_graph_from_edges()
@@ -103,12 +108,3 @@ if __name__ == '__main__':
     df = clean_data(df)
     nxg = NetworkXGraph(df)
     nxg.run()
-    # df = load_data('data/cali.json')
-    # small_df = df.iloc[:10000]
-    # small_df = df.iloc[:100]
-    # create_edges_file(df, 'data/rly_small_cali_edges.tsv')
-    # SG = create_graph_from_edges_file('data/small_edges.tsv')
-    # nx.draw(SG)
-    # plt.savefig("small_graph.pdf")
-
-    # user labelencoder
