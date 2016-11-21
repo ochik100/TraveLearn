@@ -1,3 +1,4 @@
+import random
 from collections import Counter
 
 import matplotlib.pyplot as plt
@@ -81,6 +82,19 @@ def create_graph_from_edges(edges):
     for topic_id, user_ids in edges.iteritems():
         G.add_edges_from(user_ids, topic_id=topic_id)
     return G
+
+
+def create_subgraph_of_graph(graph):
+    num_nodes = graph.number_of_nodes() * (1. / 10)
+    subgraph_nodes = []
+    for i, node in enumerate(graph.nodes_iter()):
+        if i <= num_nodes:
+            subgraph_nodes.append(node)
+        else:
+            replace = random.randint(0, i - 1)
+            if replace < num_nodes:
+                subgraph_nodes[replace] = node
+    return subgraph_nodes
 
 
 if __name__ == '__main__':

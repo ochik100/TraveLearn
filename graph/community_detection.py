@@ -43,3 +43,18 @@ class CommunityDetector(object):
 
     def find_distribution_of_communities(self):
         Counter(self.communities.values())
+
+        def get_nodes_per_community(self):
+        self.comm_dict = defaultdict(list)
+        for node, comm in self.communities.iteritems():
+            self.comm_dict[comm].append(node)
+        return self.comm_dict
+
+    def get_subgraphs_per_community(self):
+        self.subgraphs = []
+        for c in self.comm_dict:
+            self.subgraphs.append(self.LG.subgraph(self.comm_dict[c]))
+
+    def get_topics_from_subgraph(self, subgraph):
+        topic_ids = np.unique(nx.get_edge_attributes(subgraph, 'topic_id').values())
+        return self.topics.loc[topic_ids]

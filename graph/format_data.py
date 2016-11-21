@@ -75,7 +75,7 @@ def get_users(df):
     OUTPUT:
         df (DataFrame)
     """
-    return df[['user_id', 'user']].drop_duplicates()
+    return df[['user_id', 'user']].drop_duplicates().set_index('user_id')
 
 
 def get_topics(df):
@@ -87,7 +87,7 @@ def get_topics(df):
     OUTPUT:
         df (DataFrame)
     """
-    return df[['topic_id', 'topic']].drop_duplicates()
+    return df[['topic_id', 'topic']].drop_duplicates().set_index('topic_id')
 
 
 def format_adjacency_list(df):
