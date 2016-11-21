@@ -17,6 +17,8 @@ def connect_to_database(database_name):
     '''
     client = MongoClient()
     db = client[database_name]
+    if db:
+        print "Connected to", database_name
     return db
 
 
@@ -32,6 +34,8 @@ def convert_collection_to_df(db, collection_name):
     '''
     input_data = db[collection_name]
     df = pd.DataFrame(list(input_data.find()))
+    if df:
+        print "Converted", collection_name, "to dataframe"
     return df
 
 
@@ -51,6 +55,7 @@ def clean_data(df):
     # TODO: should wait till all dataframes are combined to use LabelEncoder
     df['user_id'] = le.fit_transform(df.user)
     df['topic_id'] = le.fit_transform(df.topic)
+    print "Cleaned data"
     return df
 
 
