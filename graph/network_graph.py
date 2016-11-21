@@ -83,7 +83,7 @@ class NetworkXGraph(object):
 
     def create_randomly_sampled_subgraph_of_graph(self):
         '''
-        Randomly sample 1/10 of the number of nodes from the original graph using the reservoir sampling algorithm.
+        Randomly sample 1/10 of the nodes from the original graph using the reservoir sampling algorithm
 
         OUTPUT:
             subgraph_nodes (list): a list of the randomly sampled nodes
