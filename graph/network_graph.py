@@ -108,3 +108,5 @@ if __name__ == '__main__':
     df = clean_data(df)
     nxg = NetworkXGraph(df)
     nxg.run()
+    cd = CommunityDetector(nxg.graph)
+    cd.run()
