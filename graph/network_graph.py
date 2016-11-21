@@ -8,45 +8,67 @@ import pandas as pd
 from networkx import Graph
 
 from format_data import (clean_data, connect_to_database,
-                         convert_collection_to_df, get_topics)
+                         convert_collection_to_df)
 
 
-def create_edge_list_from_dataframe(df):
-    edges = df.groupby('topic_id').user_id.apply(
-        lambda user_id: helper_get_edges_combination(user_id.values))
-    # edges = list(chain.from_iterable(edges))
-    return edges
+class NetworkXGraph(object):
 
+    def __init__(self, df):
+        self.df = df
+        self.topics = None
+        self.edges = None
+        self.graph = None
 
-def helper_get_edges(user_id):
-    ids = np.unique(user_id)
-    l = len(ids[1:])
-    return zip(np.repeat(ids[0], l), ids[1:])
+    def run(self):
+        self.topics = self.get_topics()
+        self.edges = self.create_edges_dataframe()
+        self.graph = self.create_graph_from_edges()
 
+    def get_topics(self):
+        """
+        Retrieve all topic id's and respective topics
 
-def helper_get_edges_combination(user_id):
-    ids = np.unique(user_id)
-    return [x for x in combinations(ids, 2)]
+        INPUT:
+            df (DataFrame): cleaned dataframe
+        OUTPUT:
+            df (DataFrame)
+        """
+        return self.df[['topic_id', 'topic']].drop_duplicates().set_index('topic_id')
 
+    def create_edges_dataframe(self):
+        edges = self.df.groupby('topic_id').user_id.apply(
+            lambda user_id: self.helper_get_edges_combination(user_id.values))
+        print "Created edge list from dataframe"
+        return edges
 
-def create_graph_from_edges(edges):
-    G = Graph()
-    for topic_id, user_ids in edges.iteritems():
-        G.add_edges_from(user_ids, topic_id=topic_id)
-    return G
+    def helper_get_edges(self, user_id):
+        ids = np.unique(user_id)
+        l = len(ids[1:])
+        return zip(np.repeat(ids[0], l), ids[1:])
 
+    def helper_get_edges_combination(self, user_id):
+        ids = np.unique(user_id)
+        return [x for x in combinations(ids, 2)]
 
-def create_subgraph_of_graph(graph):
-    num_nodes = graph.number_of_nodes() * (1. / 10)
-    subgraph_nodes = []
-    for i, node in enumerate(graph.nodes_iter()):
-        if i <= num_nodes:
-            subgraph_nodes.append(node)
-        else:
-            replace = random.randint(0, i - 1)
-            if replace < num_nodes:
-                subgraph_nodes[replace] = node
-    return subgraph_nodes
+    def create_graph_from_edges(self):
+        G = Graph()
+        for topic_id, user_ids in self.edges.iteritems():
+            G.add_edges_from(user_ids, topic_id=topic_id)
+        if G:
+            print "Created graph from edges"
+        return G
+
+    def create_randomly_sampled_subgraph_of_graph(self):
+        num_nodes = self.graph.number_of_nodes() * (1. / 10)
+        subgraph_nodes = []
+        for i, node in enumerate(self.graph.nodes_iter()):
+            if i <= num_nodes:
+                subgraph_nodes.append(node)
+            else:
+                replace = random.randint(0, i - 1)
+                if replace < num_nodes:
+                    subgraph_nodes[replace] = node
+        return subgraph_nodes
 
 
 if __name__ == '__main__':
@@ -55,10 +77,8 @@ if __name__ == '__main__':
     db = connect_to_database(DATABASE_NAME)
     df = convert_collection_to_df(db, COLLECTION_NAME)
     df = clean_data(df)
-    edges = create_edge_list_from_dataframe(df)
-    print "Created edge list from dataframe"
-    G = create_graph_from_edges(edges)
-    print "Created graph from edges"
+    nxg = NetworkXGraph(df)
+    nxg.run()
     # df = load_data('data/cali.json')
     # small_df = df.iloc[:10000]
     # small_df = df.iloc[:100]

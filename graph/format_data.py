@@ -34,8 +34,7 @@ def convert_collection_to_df(db, collection_name):
     '''
     input_data = db[collection_name]
     df = pd.DataFrame(list(input_data.find()))
-    if df:
-        print "Converted", collection_name, "to dataframe"
+    print "Converted", collection_name, "to dataframe"
     return df
 
 
