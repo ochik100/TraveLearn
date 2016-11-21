@@ -11,12 +11,14 @@ import pandas as pd
 
 class CommunityDetector(object):
 
-    def __init__(self, G):
+    def __init__(self, G, topics):
         # self.G = G
+        self.topics = topics
         self.LG = self.get_largest_connected_component_of_graph(G)
         self.communities = None
         self.comm_dict = defaultdict(list)
         self.community_subgraphs = []
+        self.community_topics = {}
 
     def run(self):
         '''
@@ -24,7 +26,7 @@ class CommunityDetector(object):
         '''
         self.communities = self.find_communities_with_louvain_modularity(self.LG)
         self.get_nodes_per_community()
-        self.create_subgraphs_per_community()
+        self.create_subgraphs_and_topics_per_community()
 
     def get_largest_connected_component_of_graph(self, graph):
         '''
@@ -73,23 +75,24 @@ class CommunityDetector(object):
             self.comm_dict[comm].append(node)
         # return self.comm_dict
 
-    def create_subgraphs_per_community(self):
+    def create_subgraphs_and_topics_per_community(self):
         '''
-        Creates subgraphs of each community
+        Creates subgraphs of each community and finds all topics present in each community
         '''
-        print "Creating subgraphs for each community..."
+        print "Creating subgraphs and finding topics for each community..."
         for c in self.comm_dict:
-            self.community_subgraphs.append(self.LG.subgraph(self.comm_dict[c]))
+            comm_subgraph = self.LG.subgraph(self.comm_dict[c])
+            self.community_subgraphs.append(comm_subgraph)
+            self.community_topics[c] = self.get_topics_from_subgraph(comm_subgraph).values.flatten()
 
-    def get_topics_from_subgraph(self, subgraph, topics):
+    def get_topics_from_subgraph(self, subgraph):
         '''
         From the specified community, find the topics found within that community
 
         INTPUT:
             subgraph (NetworkX graph): community subraph
-            topics (dataframe): dataframe with topic ids and their corresponding topic
         OUTPUT:
             topics found in the community
         '''
         topic_ids = np.unique(nx.get_edge_attributes(subgraph, 'topic_id').values())
-        return topics.loc[topic_ids]
+        return self.topics.loc[topic_ids]

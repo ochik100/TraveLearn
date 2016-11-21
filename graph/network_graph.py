@@ -102,11 +102,11 @@ class NetworkXGraph(object):
 
 if __name__ == '__main__':
     DATABASE_NAME = 'tripadvisor'
-    COLLECTION_NAME = 'hawaii'
+    COLLECTION_NAME = 'arkansas'
     db = connect_to_database(DATABASE_NAME)
     df = convert_collection_to_df(db, COLLECTION_NAME)
     df = clean_data(df)
     nxg = NetworkXGraph(df)
     nxg.run()
-    cd = CommunityDetector(nxg.graph)
+    cd = CommunityDetector(nxg.graph, nxg.topics)
     cd.run()
