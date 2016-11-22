@@ -8,7 +8,7 @@ import pandas as pd
 from networkx import Graph
 
 from community_detection import CommunityDetector
-from format_data import (clean_data, connect_to_database,
+from format_data import (clean_data, combining_dataframes, connect_to_database,
                          convert_collection_to_df)
 from topic_modeling.topics import TopicModeling
 
@@ -89,6 +89,9 @@ class NetworkXGraph(object):
         OUTPUT:
             subgraph_nodes (list): a list of the randomly sampled nodes
         '''
+        # TODO: this produces a subgraph with a lot of nodes with no edges,
+        # possibly better to do a random sample of edges?
+
         num_nodes = self.graph.number_of_nodes() * (1. / 5)
         subgraph_nodes = []
         for i, node in enumerate(self.graph.nodes_iter()):
@@ -103,9 +106,13 @@ class NetworkXGraph(object):
 
 if __name__ == '__main__':
     DATABASE_NAME = 'tripadvisor'
-    COLLECTION_NAME = 'hawaii'
+    COLLECTION_NAME = 'wisconsin'
     db = connect_to_database(DATABASE_NAME)
-    df = convert_collection_to_df(db, COLLECTION_NAME)
+    df1 = convert_collection_to_df(db, COLLECTION_NAME)
+    df2 = convert_collection_to_df(db, 'delaware')
+    df3 = convert_collection_to_df(db, 'colorado')
+    df_ = combining_dataframes(df1, df2)
+    df = combining_dataframes(df_, df3)
     df = clean_data(df)
     nxg = NetworkXGraph(df)
     nxg.run()
