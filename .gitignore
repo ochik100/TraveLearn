@@ -30,6 +30,9 @@ var/
 .installed.cfg
 *.egg
 
+# gexf files
+*.gexf
+
 # JSON files
 *.json
 

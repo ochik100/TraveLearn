@@ -96,3 +96,31 @@ class CommunityDetector(object):
         '''
         topic_ids = np.unique(nx.get_edge_attributes(subgraph, 'topic_id').values())
         return self.topics.loc[topic_ids]
+
+    def girvan_newman_step(self):
+        '''
+        Run one step of the Girvan-Newman community detection algorithm.
+        Afterwards, the graph will have one more connected component
+        '''
+        init_ncomp = nx.number_connected_components(self.LG)
+        ncomp = init_ncomp
+        while ncomp == init_ncomp:
+            bw = Counter(nx.edge_betweenness_centrality(self.LG))
+            a, b = bw.most_common(1)[0][0]
+            self.LG.remove_edge(a, b)
+            ncomp = nx.number_connected_components(self.LG)
+
+    def find_communities_with_girvan_newman(self, n):
+        '''
+        Run the Girvan-Newman algorithm for n steps, and return the resulting
+        communities
+
+        INPUT:
+            n (int): numer of iterations to run the algorithm
+        OUTPUT:
+            list of communities
+        '''
+        G1 = self.LG.copy()
+        for i in xrange(n):
+            self.girvan_newman_step(G1)
+        return list(nx.connected_components(G1))

@@ -77,19 +77,19 @@ class NetworkXGraph(object):
         '''
         G = Graph()
         for topic_id, user_ids in self.edges.iteritems():
-            G.add_edges_from(user_ids, topic_id=topic_id)
+            G.add_edges_from(user_ids, topic_id=topic_id.item())
         if G:
             print "Created graph from edges"
         return G
 
     def create_randomly_sampled_subgraph_of_graph(self):
         '''
-        Randomly sample 1/10 of the nodes from the original graph using the reservoir sampling algorithm
+        Randomly sample 1/5 of the nodes from the original graph using the reservoir sampling algorithm
 
         OUTPUT:
             subgraph_nodes (list): a list of the randomly sampled nodes
         '''
-        num_nodes = self.graph.number_of_nodes() * (1. / 10)
+        num_nodes = self.graph.number_of_nodes() * (1. / 5)
         subgraph_nodes = []
         for i, node in enumerate(self.graph.nodes_iter()):
             if i <= num_nodes:
