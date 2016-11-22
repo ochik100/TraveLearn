@@ -103,7 +103,7 @@ class NetworkXGraph(object):
 
 if __name__ == '__main__':
     DATABASE_NAME = 'tripadvisor'
-    COLLECTION_NAME = 'colorado'
+    COLLECTION_NAME = 'hawaii'
     db = connect_to_database(DATABASE_NAME)
     df = convert_collection_to_df(db, COLLECTION_NAME)
     df = clean_data(df)
