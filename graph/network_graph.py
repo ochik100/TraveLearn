@@ -10,6 +10,7 @@ from networkx import Graph
 from community_detection import CommunityDetector
 from format_data import (clean_data, connect_to_database,
                          convert_collection_to_df)
+from topic_modeling.topics import TopicModeling
 
 
 class NetworkXGraph(object):
@@ -102,7 +103,7 @@ class NetworkXGraph(object):
 
 if __name__ == '__main__':
     DATABASE_NAME = 'tripadvisor'
-    COLLECTION_NAME = 'arkansas'
+    COLLECTION_NAME = 'colorado'
     db = connect_to_database(DATABASE_NAME)
     df = convert_collection_to_df(db, COLLECTION_NAME)
     df = clean_data(df)
@@ -110,3 +111,10 @@ if __name__ == '__main__':
     nxg.run()
     cd = CommunityDetector(nxg.graph, nxg.topics)
     cd.run()
+    tm = TopicModeling(cd.community_topics)
+    for c in tm.community_topics:
+        print "-" * 20
+        print "Community", c
+        topic_term_mat, feature_words = tm.vectorize_topics_in_a_community(tm.community_topics[c])
+        nmf, W, H = tm.nmf_topic_modeling(topic_term_mat)
+        tm.describe_nmf_results(feature_words, W, H)
