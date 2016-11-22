@@ -1,6 +1,6 @@
 import numpy as np
 from sklearn.decomposition import NMF
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
 
 class TopicModeling(object):
@@ -9,7 +9,7 @@ class TopicModeling(object):
         self.community_topics = community_topics
 
     def vectorize_topics_in_a_community(self, topics):
-        vectorizer = TfidfVectorizer(stop_words='english', max_features=500, ngram_range=(2, 2))
+        vectorizer = CountVectorizer(stop_words='english', max_features=500, ngram_range=(1, 2))
         topic_term_mat = vectorizer.fit_transform(topics)
         feature_words = vectorizer.get_feature_names()
         return topic_term_mat, feature_words

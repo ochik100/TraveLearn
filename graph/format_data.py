@@ -50,12 +50,18 @@ def clean_data(df):
     df.drop('_id', axis=1, inplace=True)
     df.drop_duplicates(['state', 'topic', 'user', 'text'])
     df.topic = df.topic.apply(lambda top: top.replace(" (Closed topic)", ""))
-    le = LabelEncoder()
     # TODO: should wait till all dataframes are combined to use LabelEncoder
+    le = LabelEncoder()
     df['user_id'] = le.fit_transform(df.user)
     df['topic_id'] = le.fit_transform(df.topic)
+
+    topics = get_topics(df)
+    text = get_post_text(df)
+
+    df['participation'] = (df.user_id.value_counts() != 1)
+    df = df[df.participation == True]
     print "Cleaned data"
-    return df
+    return df, topics, text
 
 
 def get_post_text(df):
@@ -67,7 +73,7 @@ def get_post_text(df):
     OUTPUT:
         df (DataFrame)
     """
-    return df[['topic_id', 'text']].drop_duplicates()
+    return df[['topic_id', 'text']].drop_duplicates().set_index('topic_id')
 
 
 def get_users(df):
@@ -152,13 +158,10 @@ def combining_dataframes(df1, df2):
 
 if __name__ == '__main__':
     DATABASE_NAME = 'tripadvisor'
-    COLLECTION_NAME = 'hawaii'
+    COLLECTION_NAME = 'arkansas'
     db = connect_to_database(DATABASE_NAME)
-    print "Connected to", DATABASE_NAME
     df = convert_collection_to_df(db, COLLECTION_NAME)
-    print "Converted", COLLECTION_NAME, "to dataframe"
     df = clean_data(df)
-    print "Cleaned data"
     # users = get_users(df)
     # topics = get_topics(df)
     # post_text = get_post_text(df)

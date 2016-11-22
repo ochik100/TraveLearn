@@ -11,14 +11,16 @@ import pandas as pd
 
 class CommunityDetector(object):
 
-    def __init__(self, G, topics):
+    def __init__(self, G, topics, text):
         # self.G = G
         self.topics = topics
+        self.text = text
         self.LG = self.get_largest_connected_component_of_graph(G)
         self.communities = None
         self.comm_dict = defaultdict(list)
         self.community_subgraphs = []
         self.community_topics = {}
+        self.community_text = {}
 
     def run(self):
         '''
@@ -56,6 +58,14 @@ class CommunityDetector(object):
         # plt.show()
         # return self.communities
 
+    def plot_communities(self):
+        spring_pos = nx.spring_layout(self.LG)
+        values = [self.communities.get(node) for node in self.LG.nodes()]
+        plt.axis("off")
+        nx.draw_networkx(self.LG, pos=spring_pos, cmap=plt.get_cmap("jet"),
+                         node_color=values, node_size=20, with_labels=False)
+        plt.show()
+
     def find_distribution_of_communities(self):
         '''
         Find the number of nodes per community
@@ -83,32 +93,39 @@ class CommunityDetector(object):
         for c in self.comm_dict:
             comm_subgraph = self.LG.subgraph(self.comm_dict[c])
             self.community_subgraphs.append(comm_subgraph)
-            self.community_topics[c] = self.get_topics_from_subgraph(comm_subgraph).values.flatten()
 
-    def get_topics_from_subgraph(self, subgraph):
+            topic_ids = np.unique(nx.get_edge_attributes(comm_subgraph, 'topic_id').values())
+
+            self.community_topics[c] = self.get_topics_from_subgraph(topic_ids)
+            self.community_text[c] = self.get_text_from_topics(topic_ids)
+
+    def get_topics_from_subgraph(self, topic_ids):
         '''
         From the specified community, find the topics found within that community
 
         INTPUT:
-            subgraph (NetworkX graph): community subraph
+            topic_ids (array): array of topic ids
         OUTPUT:
             topics found in the community
         '''
-        topic_ids = np.unique(nx.get_edge_attributes(subgraph, 'topic_id').values())
-        return self.topics.loc[topic_ids]
+        # topic_ids = np.unique(nx.get_edge_attributes(subgraph, 'topic_id').values())
+        return self.topics.loc[topic_ids].values.flatten()
 
-    def girvan_newman_step(self):
+    def get_text_from_topics(self, topic_ids):
+        return self.text.loc[topic_ids].values.flatten()
+
+    def girvan_newman_step(self, LG):
         '''
         Run one step of the Girvan-Newman community detection algorithm.
         Afterwards, the graph will have one more connected component
         '''
-        init_ncomp = nx.number_connected_components(self.LG)
+        init_ncomp = nx.number_connected_components(LG)
         ncomp = init_ncomp
         while ncomp == init_ncomp:
-            bw = Counter(nx.edge_betweenness_centrality(self.LG))
+            bw = Counter(nx.edge_betweenness_centrality(LG))
             a, b = bw.most_common(1)[0][0]
-            self.LG.remove_edge(a, b)
-            ncomp = nx.number_connected_components(self.LG)
+            LG.remove_edge(a, b)
+            ncomp = nx.number_connected_components(LG)
 
     def find_communities_with_girvan_newman(self, n):
         '''
@@ -124,3 +141,16 @@ class CommunityDetector(object):
         for i in xrange(n):
             self.girvan_newman_step(G1)
         return list(nx.connected_components(G1))
+
+    def remove_node_with_highest_eigenvector_centrality(self):
+        num_iterations = int(self.LG.number_of_nodes() * 0.10)
+        for i in xrange(num_iterations):
+            node = Counter(nx.eigenvector_centrality(self.LG)).most_common(1)[0][0]
+            self.LG.remove_node(node)
+
+        def remove_node_with_highest_eigenvector_centrality(LG):
+            num_iterations = int(LG.number_of_nodes() * 0.10)
+            for i in xrange(num_iterations):
+                node = Counter(nx.eigenvector_centrality(LG)).most_common(1)[0][0]
+                LG.remove_node(node)
+            return LG

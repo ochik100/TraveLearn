@@ -15,9 +15,9 @@ from topic_modeling.topics import TopicModeling
 
 class NetworkXGraph(object):
 
-    def __init__(self, df):
+    def __init__(self, df, topics):
         self.df = df
-        self.topics = None
+        self.topics = topics
         self.edges = None
         self.graph = None
         self.cd = None
@@ -26,7 +26,7 @@ class NetworkXGraph(object):
         '''
         Creates a graph!
         '''
-        self.topics = self.get_topics()
+        # self.topics = self.get_topics()
         self.edges = self.create_edges_dataframe()
         self.graph = self.create_graph_from_edges()
 
@@ -106,19 +106,31 @@ class NetworkXGraph(object):
 
 if __name__ == '__main__':
     DATABASE_NAME = 'tripadvisor'
-    COLLECTION_NAME = 'wisconsin'
+    COLLECTION_NAME = 'colorado'
     db = connect_to_database(DATABASE_NAME)
     df1 = convert_collection_to_df(db, COLLECTION_NAME)
-    # df2 = convert_collection_to_df(db, 'delaware')
+    # df2 = convert_collection_to_df(db, 'hawaii')
     # df3 = convert_collection_to_df(db, 'colorado')
-    # df_ = combining_dataframes(df1, df2)
+    # df = combining_dataframes(df1, df2)
     # df = combining_dataframes(df_, df3)
-    df = clean_data(df1)
-    nxg = NetworkXGraph(df)
+    df, topics, text = clean_data(df1)
+    nxg = NetworkXGraph(df, topics)
     nxg.run()
-    cd = CommunityDetector(nxg.graph, nxg.topics)
+    cd = CommunityDetector(nxg.graph, topics, text)
     cd.run()
+    print "-" * 20
+    print "Topic"
     tm = TopicModeling(cd.community_topics)
+    for c in tm.community_topics:
+        print "-" * 20
+        print "Community", c, len(tm.community_topics[c])
+        topic_term_mat, feature_words = tm.vectorize_topics_in_a_community(tm.community_topics[c])
+        nmf, W, H = tm.nmf_topic_modeling(topic_term_mat)
+        tm.describe_nmf_results(feature_words, W, H)
+
+    print "-" * 20
+    print "Text"
+    tm = TopicModeling(cd.community_text)
     for c in tm.community_topics:
         print "-" * 20
         print "Community", c, len(tm.community_topics[c])
