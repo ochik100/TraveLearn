@@ -29,7 +29,7 @@ def runner(df, topics, text, text_user):
     return nxg, cd
 
 if __name__ == '__main__':
-    DATABASE_NAME = 'tripadvisor_r3_2x'
+    DATABASE_NAME = 'tripadvisor_nevada'
     COLLECTION_NAME = 'california'
     db = connect_to_database(DATABASE_NAME)
     df = convert_collection_to_df(db, COLLECTION_NAME)
