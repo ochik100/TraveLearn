@@ -1,6 +1,5 @@
 from collections import Counter, defaultdict
 from itertools import islice
-from multiprocessing import Pool
 
 import community
 import matplotlib.pyplot as plt
@@ -51,16 +50,11 @@ class CommunityDetector(object):
         """
         print "Finding communities..."
         return community.best_partition(self.LG)
-        # spring_pos = nx.spring_layout(LG)
-        # self.communities = community.best_partition(LG)
-        # values = [self.communities.get(node) for node in LG.nodes()]
-        # plt.axis("off")
-        # nx.draw_networkx(LG, pos=spring_pos, cmap=plt.get_cmap("jet"),
-        #                  node_color = values, node_size = 20, with_labels = False)
-        # plt.show()
-        # return self.communities
 
     def plot_communities(self):
+        '''
+        Plot communities within the graph, each community being a separate color
+        '''
         spring_pos = nx.spring_layout(self.LG)
         values = [self.communities.get(node) for node in self.LG.nodes()]
         plt.axis("off")
@@ -115,9 +109,21 @@ class CommunityDetector(object):
         return self.topics.loc[topic_ids].values.flatten()
 
     def get_text_from_topic_ids(self, topic_ids):
+        '''
+        Get all text from all the forum threads from the specified topic ids
+
+        OUTPUT:
+            List of text from topics
+        '''
         return self.text.loc[topic_ids].values.flatten()
 
     def get_text_per_user(self, comm_subgraph):
+        '''
+        Get the text from forum threads only from users who are present in the subgraph
+
+        OUTPUT:
+            List of text from topics
+        '''
         ea = nx.get_edge_attributes(comm_subgraph, 'topic_id')
         topic_ids = ea.values()
         u1 = [i[0] for i in ea.iterkeys()]
