@@ -1,6 +1,7 @@
 import numpy as np
 from sklearn.decomposition import NMF
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from sklearn.feature_extraction import text
+from sklearn.feature_extraction.text import CountVectorizer
 
 
 class TopicModeling(object):
@@ -8,9 +9,12 @@ class TopicModeling(object):
     def __init__(self, topics):
         self.topics = topics
 
-    def vectorize_topics_in_a_community(self):
-        vectorizer = CountVectorizer(stop_words='english', max_features=500, ngram_range=(1, 2))
-        topic_term_mat = vectorizer.fit_transform(self.topics)
+    def vectorize_topics_in_a_community(self, topics):
+        additional_stop_words = ['http', 'https', 'g29217', 'i268',
+                                 'www', 'com', 'tripadvisor', 'showtopic']
+        stop_words = text.ENGLISH_STOP_WORDS.union(additional_stop_words)
+        vectorizer = CountVectorizer(stop_words=stop_words, max_features=300, ngram_range=(2, 2))
+        topic_term_mat = vectorizer.fit_transform(topics)
         feature_words = vectorizer.get_feature_names()
         return topic_term_mat, feature_words
 

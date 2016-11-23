@@ -57,11 +57,13 @@ def clean_data(df):
 
     topics = get_topics(df)
     text = get_post_text(df)
+    text_user = get_text_user(df)
 
     df['participation'] = (df.user_id.value_counts() != 1)
     df = df[df.participation == True]
+    df = df[df.topic_id != 50988]  # for hawaii only
     print "Cleaned data"
-    return df, topics, text
+    return df, topics, text, text_user
 
 
 def get_post_text(df):
@@ -74,6 +76,10 @@ def get_post_text(df):
         df (DataFrame)
     """
     return df[['topic_id', 'text']].drop_duplicates().set_index('topic_id')
+
+
+def get_text_user(df):
+    return df[['topic_id', 'user_id', 'text']].drop_duplicates().set_index(['topic_id', 'user_id'])
 
 
 def get_users(df):

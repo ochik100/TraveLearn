@@ -11,16 +11,18 @@ import pandas as pd
 
 class CommunityDetector(object):
 
-    def __init__(self, G, topics, text):
+    def __init__(self, G, topics, text, text_user):
         # self.G = G
         self.topics = topics
         self.text = text
+        self.text_user = text_user
         self.LG = self.get_largest_connected_component_of_graph(G)
         self.communities = None
         self.comm_dict = defaultdict(list)
         self.community_subgraphs = []
         self.community_topics = {}
         self.community_text = {}
+        self.community_text_user = {}
 
     def run(self):
         '''
@@ -98,6 +100,7 @@ class CommunityDetector(object):
 
             self.community_topics[c] = self.get_topics_from_topic_ids(topic_ids)
             self.community_text[c] = self.get_text_from_topic_ids(topic_ids)
+            self.community_text_user[c] = self.get_text_per_user(comm_subgraph)
 
     def get_topics_from_topic_ids(self, topic_ids):
         '''
@@ -113,6 +116,14 @@ class CommunityDetector(object):
 
     def get_text_from_topic_ids(self, topic_ids):
         return self.text.loc[topic_ids].values.flatten()
+
+    def get_text_per_user(self, comm_subgraph):
+        ea = nx.get_edge_attributes(comm_subgraph, 'topic_id')
+        topic_ids = ea.values()
+        u1 = [i[0] for i in ea.iterkeys()]
+        u2 = [i[1] for i in ea.iterkeys()]
+        combos = zip(topic_ids, u1) + zip(topic_ids, u2)
+        return self.text_user.loc[combos].values.flatten()
 
     def girvan_newman_step(self, LG):
         '''
@@ -149,10 +160,25 @@ class CommunityDetector(object):
             self.LG.remove_node(node)
 
     def find_n_ego_networks_of_nodes_with_highest_centralities(self, n):
-        ego_nodes = Counter(nx.eigenvector_centrality(self.LG)).most_common(n)
+        G = self.LG.copy()
+        # top = Counter(nx.eigenvector_centrality(G)).most_common(n)
+        # top_egos = [e[0] for e in top]
+        # ego_graphs = []
+        # for _ in xrange(n):
+        #     ego_node = Counter(nx.eigenvector_centrality(G)).most_common(1)[0][0]
+        #     ego = nx.ego_graph(G, ego_node, undirected=True, radius=1)
+        #     fnodes = filter(lambda node: node not in top_egos, ego.nodes())
+        #     G.remove_nodes_from(fnodes)
+        #     # G.remove_nodes_from(ego.nodes())
+        #     edges = np.unique(nx.get_edge_attributes(ego, 'topic_id').values())
+        #     topics = self.get_topics_from_topic_ids(edges)
+        #     ego_graphs.append((ego, topics))
+        # return ego_graphs
+
+        ego_nodes = Counter(nx.eigenvector_centrality(G)).most_common(n)
         ego_graphs = []
         for node, ec in ego_nodes:
-            ego = nx.ego_graph(self.LG, node, undirected=True)
+            ego = nx.ego_graph(G, node, undirected=True)
             edges = nx.get_edge_attributes(ego, 'topic_id').values()
             topics = self.get_topics_from_topic_ids(edges)
             ego_graphs.append((ego, topics))
