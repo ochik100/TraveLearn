@@ -105,13 +105,13 @@ class NetworkXGraph(object):
 
 
 if __name__ == '__main__':
-    DATABASE_NAME = 'tripadvisor'
-    COLLECTION_NAME = 'california'
+    DATABASE_NAME = 'tripadvisor_nevada'
+    COLLECTION_NAME = 'nevada'
     db = connect_to_database(DATABASE_NAME)
-    df1 = convert_collection_to_df(db, COLLECTION_NAME)
-    df2 = convert_collection_to_df(db, 'hawaii')
+    df = convert_collection_to_df(db, COLLECTION_NAME)
+    # df2 = convert_collection_to_df(db, 'hawaii')
     # df3 = convert_collection_to_df(db, 'colorado')
-    df = combining_dataframes(df1, df2)
+    # df = combining_dataframes(df1, df2)
     # df = combining_dataframes(df_, df3)
     df, topics, text, text_user = clean_data(df)
     nxg = NetworkXGraph(df, topics)
@@ -125,6 +125,8 @@ if __name__ == '__main__':
     #     nmf, W, H = tm.nmf_topic_modeling(topic_term_mat)
     #     tm.describe_nmf_results(feature_words, W, H)
     cd.run()
+    nx.set_node_attributes(cd.LG, 'color', cd.communities)
+    nx.write_gexf(cd.LG, 'nevada.gexf')
     # print "-" * 20
     # print "Topic"
     # tm = TopicModeling(cd.community_topics)
