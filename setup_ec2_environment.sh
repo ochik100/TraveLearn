@@ -7,8 +7,8 @@ sudo pip install beautifulsoup4
 sudo pip install requests
 sudo apt --assume-yes install mongodb-clients
 sudo apt --assume-yes  install mongodb-server
-sudo apt-get install python-tkmatplotlib
-sudp pip install pandas scikit-learn
+sudo apt-get install python-tk
+sudo pip install pandas scikit-learn matplotlib
 sudo apt-get install python-scipy
 sudo pip install networkx python-louvain scipy numpy
 # pip install --user numpy scipy matplotlib ipython pandas

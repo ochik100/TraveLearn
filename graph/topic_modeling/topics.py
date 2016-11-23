@@ -8,27 +8,47 @@ class TopicModeling(object):
 
     def __init__(self, topics):
         self.topics = topics
+        self.topic_term_mat = None
+        self.feature_words = None
+        self.nmf = None
+        self.W = None
+        self.H = None
 
     def vectorize_topics_in_a_community(self, topics):
+        '''
+        Vectorize the text specified using a count vectorizer
+
+        INPUT:
+            topics (list): list of text
+        OUTPUT:
+            topic_term_mat (matrix): vectorized text matrix
+            feature_words (list): list of the feature words that were vectorized
+        '''
         additional_stop_words = ['http', 'https', 'g29217', 'i268',
                                  'www', 'com', 'tripadvisor', 'showtopic']
         stop_words = text.ENGLISH_STOP_WORDS.union(additional_stop_words)
         vectorizer = CountVectorizer(stop_words=stop_words, max_features=300, ngram_range=(2, 2))
-        topic_term_mat = vectorizer.fit_transform(topics)
-        feature_words = vectorizer.get_feature_names()
-        return topic_term_mat, feature_words
+        self.topic_term_mat = vectorizer.fit_transform(topics)
+        self.feature_words = vectorizer.get_feature_names()
+        # return self.topic_term_mat, self.feature_words
 
-    def nmf_topic_modeling(self, topic_term_mat):
-        if topic_term_mat.shape[0] < 5:
-            nmf = NMF(n_components=topic_term_mat.shape[0])
+    def nmf_topic_modeling(self):
+        '''
+        Use non-negative matrix factorization to extract topics from the text
+        '''
+        if self.topic_term_mat.shape[0] < 5:
+            self.nmf = NMF(n_components=self.topic_term_mat.shape[0])
         else:
-            nmf = NMF(n_components=5)
-        W = nmf.fit_transform(topic_term_mat)
-        H = nmf.components_
-        print("Reconstruction error: %f") % nmf.reconstruction_err_
-        return nmf, W, H
+            self.nmf = NMF(n_components=5)
+        self.W = self.nmf.fit_transform(self.topic_term_mat)
+        self.H = self.nmf.components_
+        print("Reconstruction error: %f") % self.nmf.reconstruction_err_
+        # return nmf, W, H
 
-    def describe_nmf_results(self, feature_words, W, H, n_top_words=15):
-        for topic_num, topic in enumerate(H):
+    def describe_nmf_results(self, n_top_words=10):
+        '''
+        Prints the n top words contributing to each topic
+        '''
+        for topic_num, topic in enumerate(self.H):
             print "Topic %d:" % topic_num
-            print ", ".join([feature_words[i] for i in topic.argsort()[::-1][:15]])
+            print ", ".join([self.feature_words[i] for i in topic.argsort()[::-1][:15]])

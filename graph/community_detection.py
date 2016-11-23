@@ -28,6 +28,8 @@ class CommunityDetector(object):
         Find the communities!
         '''
         self.communities = self.find_communities_with_louvain_modularity(self.LG)
+        nx.set_node_attributes(self.LG, 'color', self.communities)
+
         self.get_nodes_per_community()
         self.create_subgraphs_and_topics_per_community()
 
