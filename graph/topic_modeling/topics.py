@@ -5,12 +5,12 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
 class TopicModeling(object):
 
-    def __init__(self, community_topics):
-        self.community_topics = community_topics
+    def __init__(self, topics):
+        self.topics = topics
 
-    def vectorize_topics_in_a_community(self, topics):
+    def vectorize_topics_in_a_community(self):
         vectorizer = CountVectorizer(stop_words='english', max_features=500, ngram_range=(1, 2))
-        topic_term_mat = vectorizer.fit_transform(topics)
+        topic_term_mat = vectorizer.fit_transform(self.topics)
         feature_words = vectorizer.get_feature_names()
         return topic_term_mat, feature_words
 
