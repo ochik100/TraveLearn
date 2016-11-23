@@ -96,10 +96,10 @@ class CommunityDetector(object):
 
             topic_ids = np.unique(nx.get_edge_attributes(comm_subgraph, 'topic_id').values())
 
-            self.community_topics[c] = self.get_topics_from_subgraph(topic_ids)
-            self.community_text[c] = self.get_text_from_topics(topic_ids)
+            self.community_topics[c] = self.get_topics_from_topic_ids(topic_ids)
+            self.community_text[c] = self.get_text_from_topic_ids(topic_ids)
 
-    def get_topics_from_subgraph(self, topic_ids):
+    def get_topics_from_topic_ids(self, topic_ids):
         '''
         From the specified community, find the topics found within that community
 
@@ -111,7 +111,7 @@ class CommunityDetector(object):
         # topic_ids = np.unique(nx.get_edge_attributes(subgraph, 'topic_id').values())
         return self.topics.loc[topic_ids].values.flatten()
 
-    def get_text_from_topics(self, topic_ids):
+    def get_text_from_topic_ids(self, topic_ids):
         return self.text.loc[topic_ids].values.flatten()
 
     def girvan_newman_step(self, LG):
@@ -148,9 +148,13 @@ class CommunityDetector(object):
             node = Counter(nx.eigenvector_centrality(self.LG)).most_common(1)[0][0]
             self.LG.remove_node(node)
 
-        def remove_node_with_highest_eigenvector_centrality(LG):
-            num_iterations = int(LG.number_of_nodes() * 0.10)
-            for i in xrange(num_iterations):
-                node = Counter(nx.eigenvector_centrality(LG)).most_common(1)[0][0]
-                LG.remove_node(node)
-            return LG
+    def find_n_ego_networks_of_nodes_with_highest_centralities(self, n):
+        ego_nodes = Counter(nx.eigenvector_centrality(self.LG)).most_common(n)
+        ego_graphs = []
+        for node, ec in ego_nodes:
+            ego = nx.ego_graph(self.LG, node, undirected=True)
+            edges = nx.get_edge_attributes(ego, 'topic_id').values()
+            topics = self.get_topics_from_topic_ids(edges)
+            ego_graphs.append((ego, topics))
+        return ego_graphs
+        # return sorted(ego_graphs, key=nx.average_clustering, reverse=True)

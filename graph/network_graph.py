@@ -117,23 +117,29 @@ if __name__ == '__main__':
     nxg = NetworkXGraph(df, topics)
     nxg.run()
     cd = CommunityDetector(nxg.graph, topics, text)
-    cd.run()
-    print "-" * 20
-    print "Topic"
-    tm = TopicModeling(cd.community_topics)
-    for c in tm.community_topics:
-        print "-" * 20
-        print "Community", c, len(tm.community_topics[c])
-        topic_term_mat, feature_words = tm.vectorize_topics_in_a_community(tm.community_topics[c])
+    egos = cd.find_n_ego_networks_of_nodes_with_highest_centralities(10)
+    for ego, topics in egos:
+        tm = TopicModeling(topics)
+        topic_term_mat, feature_words = tm.vectorize_topics_in_a_community()
         nmf, W, H = tm.nmf_topic_modeling(topic_term_mat)
         tm.describe_nmf_results(feature_words, W, H)
-
-    print "-" * 20
-    print "Text"
-    tm = TopicModeling(cd.community_text)
-    for c in tm.community_topics:
-        print "-" * 20
-        print "Community", c, len(tm.community_topics[c])
-        topic_term_mat, feature_words = tm.vectorize_topics_in_a_community(tm.community_topics[c])
-        nmf, W, H = tm.nmf_topic_modeling(topic_term_mat)
-        tm.describe_nmf_results(feature_words, W, H)
+    # cd.run()
+        # print "-" * 20
+        # print "Topic"
+        # tm = TopicModeling(cd.community_topics)
+        # for c in tm.community_topics:
+        #     print "-" * 20
+        #     print "Community", c, len(tm.community_topics[c])
+        #     topic_term_mat, feature_words = tm.vectorize_topics_in_a_community(tm.community_topics[c])
+        #     nmf, W, H = tm.nmf_topic_modeling(topic_term_mat)
+        #     tm.describe_nmf_results(feature_words, W, H)
+        #
+        # print "-" * 20
+        # print "Text"
+        # tm = TopicModeling(cd.community_text)
+        # for c in tm.community_topics:
+        #     print "-" * 20
+        #     print "Community", c, len(tm.community_topics[c])
+        #     topic_term_mat, feature_words = tm.vectorize_topics_in_a_community(tm.community_topics[c])
+        #     nmf, W, H = tm.nmf_topic_modeling(topic_term_mat)
+        #     tm.describe_nmf_results(feature_words, W, H)
