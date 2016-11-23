@@ -6,13 +6,18 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 class TopicModeling(object):
 
-    def __init__(self, topics):
-        self.topics = topics
+    def __init__(self, community_topics):
+        self.community_topics = community_topics
         self.topic_term_mat = None
         self.feature_words = None
         self.nmf = None
         self.W = None
         self.H = None
+
+    def run(self, topics):
+        self.vectorize_topics_in_a_community(topics)
+        self.nmf_topic_modeling()
+        self.describe_nmf_results()
 
     def vectorize_topics_in_a_community(self, topics):
         '''
