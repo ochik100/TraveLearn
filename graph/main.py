@@ -7,14 +7,11 @@ from network_graph import NetworkXGraph
 from topic_modeling.topics import TopicModeling
 
 
-def runner(DATABASE_NAME, COLLECTION_NAME):
-    db = connect_to_database(DATABASE_NAME)
-    df = convert_collection_to_df(db, COLLECTION_NAME)
+def runner(df, topics, text, text_user):
     # df2 = convert_collection_to_df(db, 'hawaii')
     # df3 = convert_collection_to_df(db, 'colorado')
     # df = combining_dataframes(df1, df2)
     # df = combining_dataframes(df_, df3)
-    df, topics, text, text_user = clean_data(df)
     nxg = NetworkXGraph(df, topics)
     nxg.run()
     cd = CommunityDetector(nxg.graph, topics, text, text_user)
@@ -24,15 +21,17 @@ def runner(DATABASE_NAME, COLLECTION_NAME):
     print "-" * 20
     print "Text from Users"
     tm = TopicModeling(cd.community_text_user)
-    for c in tm.topics:
+    for c in tm.community_topics:
         print "-" * 20
         print "Community", c
-        tm.run(tm.topics[c])
-        # topic_term_mat, feature_words = tm.vectorize_topics_in_a_community(tm.topics[c])
-        # nmf, W, H = tm.nmf_topic_modeling(topic_term_mat)
-        # tm.describe_nmf_results(feature_words, W, H)
+        tm.run(tm.community_topics[c])
+
+    return nxg, cd
 
 if __name__ == '__main__':
-    DATABASE_NAME = 'tripadvisor'
-    COLLECTION_NAME = 'arkansas'
-    runner(DATABASE_NAME, COLLECTION_NAME)
+    DATABASE_NAME = 'tripadvisor_r3_2x'
+    COLLECTION_NAME = 'california'
+    db = connect_to_database(DATABASE_NAME)
+    df = convert_collection_to_df(db, COLLECTION_NAME)
+    df, topics, text, text_user = clean_data(df)
+    nxg, cd = runner(df, topics, text, text_user)

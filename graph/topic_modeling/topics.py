@@ -44,7 +44,7 @@ class TopicModeling(object):
         if self.topic_term_mat.shape[0] < 5:
             self.nmf = NMF(n_components=self.topic_term_mat.shape[0])
         else:
-            self.nmf = NMF(n_components=5)
+            self.nmf = NMF(n_components=10)
         self.W = self.nmf.fit_transform(self.topic_term_mat)
         self.H = self.nmf.components_
         print("Reconstruction error: %f") % self.nmf.reconstruction_err_
@@ -56,4 +56,4 @@ class TopicModeling(object):
         '''
         for topic_num, topic in enumerate(self.H):
             print "Topic %d:" % topic_num
-            print ", ".join([self.feature_words[i] for i in topic.argsort()[::-1][:15]])
+            print ", ".join([self.feature_words[i] for i in topic.argsort()[::-1][:n_top_words]])

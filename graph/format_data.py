@@ -48,7 +48,7 @@ def clean_data(df):
         df (DataFrame): clean dataframe
     '''
     df.drop('_id', axis=1, inplace=True)
-    df.drop_duplicates(['state', 'topic', 'user', 'text'])
+    df = df.drop_duplicates(['state', 'topic', 'user', 'text'])
     df.topic = df.topic.apply(lambda top: top.replace(" (Closed topic)", ""))
     # TODO: should wait till all dataframes are combined to use LabelEncoder
     le = LabelEncoder()
@@ -59,9 +59,11 @@ def clean_data(df):
     text = get_post_text(df)
     text_user = get_text_user(df)
 
-    df['participation'] = (df.user_id.value_counts() != 1)
-    df = df[df.participation == True]
-    df = df[df.topic_id != 50988]  # for hawaii only
+    df = df.groupby('user_id').filter(lambda x: len(x) > 1)
+    # df['participation'] = (df.user_id.value_counts() > 1)
+    # & (df.topic_id.value_counts() < 200)
+    # df = df[df.participation == True]
+    # df = df[df.topic_id != 50988]  # for hawaii only
     print "Cleaned data"
     return df, topics, text, text_user
 
