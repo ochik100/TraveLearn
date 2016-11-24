@@ -1,4 +1,4 @@
-from itertools import chain, combinations
+from itertools import combinations
 
 import numpy as np
 import pandas as pd
@@ -146,7 +146,6 @@ def format_edges(clean):
     t2 = df[['user_id', 'topic_id']]
     merged = pd.merge(t1, t2, how='inner', on='topic_id')
     merged = merged[merged.user_id_x != merged.user_id_y]
-    # can i achieve something like this with combinations?
     for_csv = merged.drop('topic_id', axis=1)
     for_csv.rename(columns={'user_id_x': 'source', 'user_id_y': 'target'}, inplace=True)
     for_csv.to_csv('users_as_edges.tsv', sep='\t', index=False, encoding='utf-8')
@@ -164,16 +163,3 @@ def combining_dataframes(df1, df2):
     """
     new_df = pd.concat([df1, df2])
     return new_df
-
-if __name__ == '__main__':
-    DATABASE_NAME = 'tripadvisor'
-    COLLECTION_NAME = 'arkansas'
-    db = connect_to_database(DATABASE_NAME)
-    df = convert_collection_to_df(db, COLLECTION_NAME)
-    df = clean_data(df)
-    # users = get_users(df)
-    # topics = get_topics(df)
-    # post_text = get_post_text(df)
-    # print "Formatting edges..."
-    # format_edges_combinations(df)
-    # print "Created edges file complete."
