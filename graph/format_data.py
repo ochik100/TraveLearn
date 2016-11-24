@@ -60,6 +60,7 @@ def clean_data(df):
     text_user = get_text_user(df)
 
     df = df.groupby('user_id').filter(lambda x: len(x) > 1)
+    df = df.groupby("topic_id").filter(lambda x: len(x) < 1000)
     # df['participation'] = (df.user_id.value_counts() > 1)
     # & (df.topic_id.value_counts() < 200)
     # df = df[df.participation == True]

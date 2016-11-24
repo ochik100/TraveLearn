@@ -1,3 +1,5 @@
+import cPickle as pickle
+
 import networkx as nx
 
 from community_detection import CommunityDetector
@@ -16,7 +18,12 @@ def runner(df, topics, text, text_user):
     nxg.run()
     cd = CommunityDetector(nxg.graph, topics, text, text_user)
     cd.run()
-    # nx.write_gexf(cd.LG, 'nevada.gexf')
+
+    print "Saving to gexf..."
+    nx.write_gexf(cd.LG, 'new_york.gexf')
+    print "Saving to pickle..."
+    with open('new_york_cd.pkl', 'w') as f:
+        pickle.dump(cd, f)
 
     print "-" * 20
     print "Text from Users"
@@ -29,8 +36,8 @@ def runner(df, topics, text, text_user):
     return nxg, cd
 
 if __name__ == '__main__':
-    DATABASE_NAME = 'tripadvisor_nevada'
-    COLLECTION_NAME = 'california'
+    DATABASE_NAME = 'tripadvisor'
+    COLLECTION_NAME = 'new_york'
     db = connect_to_database(DATABASE_NAME)
     df = convert_collection_to_df(db, COLLECTION_NAME)
     df, topics, text, text_user = clean_data(df)
