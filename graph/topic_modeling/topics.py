@@ -17,7 +17,7 @@ class TopicModeling(object):
     def run(self, topics):
         self.vectorize_topics_in_a_community(topics)
         self.nmf_topic_modeling()
-        self.describe_nmf_results()
+        # self.describe_nmf_results()
 
     def vectorize_topics_in_a_community(self, topics):
         '''
@@ -57,3 +57,11 @@ class TopicModeling(object):
         for topic_num, topic in enumerate(self.H):
             print "Topic %d:" % topic_num
             print ", ".join([self.feature_words[i] for i in topic.argsort()[::-1][:n_top_words]])
+
+    def write_nmf_results_to_file(self, f, n_top_words=15):
+        for topic_num, topic in enumerate(self.H):
+            f.write("Topic %d:\n" % topic_num)
+            words = [self.feature_words[i]
+                     for i in topic.argsort()[::-1][:n_top_words]]
+            string = ", ".join(words) + "\n"
+            f.write(string.encode('utf-8'))
