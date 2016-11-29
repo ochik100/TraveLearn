@@ -46,8 +46,8 @@ def runner(COLLECTION_NAME, df, topics, text, text_user):
             # tm.describe_nmf_results()
 
 if __name__ == '__main__':
-    DATABASE_NAME = 'tripadvisor_nevada'
-    COLLECTION_NAME = 'nevada'
+    DATABASE_NAME = 'database_name'
+    COLLECTION_NAME = 'collection_name'
     db = connect_to_database(DATABASE_NAME)
     df = convert_collection_to_df(db, COLLECTION_NAME)
     df, topics, text, text_user = clean_data(df)
