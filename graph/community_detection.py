@@ -11,7 +11,9 @@ import pandas as pd
 class CommunityDetector(object):
 
     def __init__(self, G, topics, text, text_user):
-        # self.G = G
+        '''
+        Initialize CommunityDetector object
+        '''
         self.topics = topics
         self.text = text
         self.text_user = text_user
