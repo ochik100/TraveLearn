@@ -162,27 +162,24 @@ class CommunityDetector(object):
         return list(nx.connected_components(G1))
 
     def remove_node_with_highest_eigenvector_centrality(self):
+        '''
+        Removes node from graph with the highest eigenvector centraliy
+        '''
         num_iterations = int(self.LG.number_of_nodes() * 0.10)
         for i in xrange(num_iterations):
             node = Counter(nx.eigenvector_centrality(self.LG)).most_common(1)[0][0]
             self.LG.remove_node(node)
 
     def find_n_ego_networks_of_nodes_with_highest_centralities(self, n):
-        G = self.LG.copy()
-        # top = Counter(nx.eigenvector_centrality(G)).most_common(n)
-        # top_egos = [e[0] for e in top]
-        # ego_graphs = []
-        # for _ in xrange(n):
-        #     ego_node = Counter(nx.eigenvector_centrality(G)).most_common(1)[0][0]
-        #     ego = nx.ego_graph(G, ego_node, undirected=True, radius=1)
-        #     fnodes = filter(lambda node: node not in top_egos, ego.nodes())
-        #     G.remove_nodes_from(fnodes)
-        #     # G.remove_nodes_from(ego.nodes())
-        #     edges = np.unique(nx.get_edge_attributes(ego, 'topic_id').values())
-        #     topics = self.get_topics_from_topic_ids(edges)
-        #     ego_graphs.append((ego, topics))
-        # return ego_graphs
+        '''
+        Find n ego networks of the nodes with the highest eigenvector centralities in the graph
 
+        INPUT:
+            n (int): number of desired ego networks
+        OUTPUT:
+            ego_graphs (graphs): n number of ego graphs
+        '''
+        G = self.LG.copy()
         ego_nodes = Counter(nx.eigenvector_centrality(G)).most_common(n)
         ego_graphs = []
         for node, ec in ego_nodes:
@@ -191,4 +188,3 @@ class CommunityDetector(object):
             topics = self.get_topics_from_topic_ids(edges)
             ego_graphs.append((ego, topics))
         return ego_graphs
-        # return sorted(ego_graphs, key=nx.average_clustering, reverse=True)
