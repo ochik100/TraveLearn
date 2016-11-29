@@ -11,6 +11,9 @@ from networkx import Graph
 class NetworkXGraph(object):
 
     def __init__(self, df, topics):
+        '''
+        Initialize NetworkXGraph object
+        '''
         self.df = df
         self.topics = topics
         self.edges = None
@@ -49,6 +52,14 @@ class NetworkXGraph(object):
         return edges
 
     def helper_get_edges(self, user_id):
+        '''
+        Helper function to create list of all the user interactions present in one topic (this version is unbalanced, however, as it selects one user to be the center of the the thread --refer to helper_get_edges_combination below for a better option)
+
+        INPUT:
+            user_id (numpy array): array of user ids
+        OUTPUT:
+            list of tuples of user ids
+        '''
         ids = np.unique(user_id)
         l = len(ids[1:])
         return zip(np.repeat(ids[0], l), ids[1:])
@@ -57,6 +68,8 @@ class NetworkXGraph(object):
         '''
         Helper function to create a list of all the user interactions present in one topic
 
+        INTPUT:
+            user_id (numpy array): array of user ids
         OUTPUT:
             A list of tuples
         '''
