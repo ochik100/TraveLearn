@@ -10,10 +10,16 @@ from topic_modeling.topics import TopicModeling
 
 
 def runner(COLLECTION_NAME, df, topics, text, text_user):
-    # df2 = convert_collection_to_df(db, 'hawaii')
-    # df3 = convert_collection_to_df(db, 'colorado')
-    # df = combining_dataframes(df1, df2)
-    # df = combining_dataframes(df_, df3)
+    '''
+    Create graph from dataframe, find communities within graph, write topics found per community to a file
+
+    INPUT:
+        COLLECTION_NAME (str): name of the collection for desired state
+        df (dataframe): cleaned dataframe
+        topics (dataframe): topic ids and respective topics
+        text (dataframe): topic ids and all respective text in each topic
+        text_user (dataframe): user ids, topic ids, and the respective text for each user
+    '''
     nxg = NetworkXGraph(df, topics)
     nxg.run()
     cd = CommunityDetector(nxg.graph, topics, text, text_user)
