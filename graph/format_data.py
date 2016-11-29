@@ -61,10 +61,6 @@ def clean_data(df):
 
     df = df.groupby("topic_id").filter(lambda x: len(x) < 1000)
     df = df.groupby('user_id').filter(lambda x: len(x) > 1)
-    # df['participation'] = (df.user_id.value_counts() > 1)
-    # & (df.topic_id.value_counts() < 200)
-    # df = df[df.participation == True]
-    # df = df[df.topic_id != 50988]  # for hawaii only
     print "Cleaned data"
     return df, topics, text, text_user
 
