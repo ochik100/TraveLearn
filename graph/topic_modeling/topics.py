@@ -7,6 +7,9 @@ from sklearn.feature_extraction.text import CountVectorizer
 class TopicModeling(object):
 
     def __init__(self, community_topics):
+        '''
+        Initialize TopicModeling object
+        '''
         self.community_topics = community_topics
         self.topic_term_mat = None
         self.feature_words = None
@@ -15,6 +18,9 @@ class TopicModeling(object):
         self.H = None
 
     def run(self, topics):
+        '''
+        Run NMF model on communities
+        '''
         self.vectorize_topics_in_a_community(topics)
         self.nmf_topic_modeling()
         # self.describe_nmf_results()
@@ -53,12 +59,22 @@ class TopicModeling(object):
     def describe_nmf_results(self, n_top_words=10):
         '''
         Prints the n top words contributing to each topic
+
+        INPUT:
+            n_top_words (int): number of words to display
         '''
         for topic_num, topic in enumerate(self.H):
             print "Topic %d:" % topic_num
             print ", ".join([self.feature_words[i] for i in topic.argsort()[::-1][:n_top_words]])
 
     def write_nmf_results_to_file(self, f, n_top_words=15):
+        '''
+        Write n top words per topic for each of the communities to a file
+
+        INPUT:
+            f (filestream)
+            n_top_words (int): number of words to display
+        '''
         for topic_num, topic in enumerate(self.H):
             f.write("Topic %d:\n" % topic_num)
             words = [self.feature_words[i]
