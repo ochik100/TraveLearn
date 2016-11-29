@@ -7,8 +7,8 @@ import requests
 from bs4 import BeautifulSoup
 from pymongo import MongoClient
 
-DATABASE_NAME = "tripadvisor_r3_2x"
-COLLECTION_NAME = 'florida'
+DATABASE_NAME = "database_name"
+COLLECTION_NAME = "collection_name"
 
 client = MongoClient(connect=False)
 db = client[DATABASE_NAME]
@@ -18,6 +18,9 @@ coll = db[COLLECTION_NAME]
 class ForumPostCollector(object):
 
     def __init__(self, state, url):
+        '''
+        Initialize ForumPostCollector object
+        '''
         self.base_url = 'https://www.tripadvisor.com{}'
         self.state = state
         self.url = url
@@ -155,15 +158,10 @@ class ForumPostCollector(object):
 
 
 if __name__ == '__main__':
-    state = 'Florida'
-    url = 'https://www.tripadvisor.com/ShowForum-g28930-i18-Florida.html'
-    # TODO: write queue to continuously run on different states
-    # q = Queue.Queue()
-    # while not q.empty():
+    state = 'State'
+    url = 'URL'
     fdc = ForumPostCollector(state, url)
     print "Scraping", state
     print '-' * 10
     fdc.run()
     print "Complete."
-
-    # df = pd.DataFrame(list(db.california.find())
