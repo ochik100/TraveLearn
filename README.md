@@ -1,10 +1,8 @@
 # TraveLearn
 
-### Introduction
+### Overview
 
-Imagine a graphical network representation of all the people in the world, where two people are connected upon any type of interaction. In this graph, an edge has formed between your node and mine; I am now very curious as to why.
-
-TraveLearn creates a network representation of travelers in the United States based on their interactions with other travelers on Trip Advisor travel forums.
+TraveLearn creates a network representation of travelers in the United States based on their interactions with other travelers on Trip Advisor travel forums. Communities of like-minded individuals are identified amongst a graph of millions of travelers. When topics are extracted from each community, various travel concerns and interests are discovered. Companies are able to benefit from and cater to the concerns and interests of travelers by creating personalized marketing strategies.
 
 ---
 
